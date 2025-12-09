@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<h3>{{ title }} – {{ course_id }}</h3>
+
+<form method="post">
+
+  <!-- User ID -->
+  <div class="mb-3">
+    <label class="form-label">User ID (student ID)</label>
+    <input type="text"
+           name="user_id"
+           class="form-control"
+           value="{{ student.get('user_id','') }}"
+           {% if 'Edit' in title %}readonly{% endif %}
+           required>
+    <div class="form-text">
+      Use student ID. On Edit, ID cannot be changed.
+    </div>
+  </div>
+
+  <!-- Full name -->
+  <div class="mb-3">
+    <label class="form-label">Full name</label>
+    <input type="text"
+           name="fullname"
+           class="form-control"
+           value="{{ student.get('fullname','') }}"
+           required>
+  </div>
+
+  <!-- Status -->
+  <div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select">
+      <option value="active"  {% if student.get('status','active')=='active' %}selected{% endif %}>active</option>
+      <option value="suspend" {% if student.get('status')=='suspend' %}selected{% endif %}>suspend</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Mid-term</label>
+      <input type="number" step="0.1" name="mid_term"
+             class="form-control"
+             value="{{ student.get('mid_term',0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Final</label>
+      <input type="number" step="0.1" name="final"
+             class="form-control"
+             value="{{ student.get('final',0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Project 1</label>
+      <input type="number" step="0.1" name="project1"
+             class="form-control"
+             value="{{ student.get('project1',0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Project 2</label>
+      <input type="number" step="0.1" name="project2"
+             class="form-control"
+             value="{{ student.get('project2',0) or 0 }}">
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Class scores -->
+  <div class="mb-3">
+    <label class="form-label">Class scores (up to {{ CLASS_COUNT }} values)</label>
+    <table class="table table-bordered table-sm align-middle">
+      <thead>
+        <tr>
+          {% for i in range(1, CLASS_COUNT + 1) %}
+          <th class="text-center">{{ i }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for i in range(1, CLASS_COUNT + 1) %}
+          <td>
+            <input type="number" step="0.1"
+                   name="class_{{ i }}"
+                   class="form-control form-control-sm"
+                   value="{{ student.get('class_' ~ i, 0) or 0 }}">
+          </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-text">Leave blank = 0.</div>
+  </div>
+
+  <!-- Lab scores -->
+  <div class="mb-3">
+    <label class="form-label">Lab scores (up to {{ LAB_COUNT }} values)</label>
+    <table class="table table-bordered table-sm align-middle">
+      <thead>
+        <tr>
+          {% for i in range(1, LAB_COUNT + 1) %}
+          <th class="text-center">{{ i }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for i in range(1, LAB_COUNT + 1) %}
+          <td>
+            <input type="number" step="0.1"
+                   name="lab_{{ i }}"
+                   class="form-control form-control-sm"
+                   value="{{ student.get('lab_' ~ i, 0) or 0 }}">
+          </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Homework scores -->
+  <div class="mb-3">
+    <label class="form-label">Homework scores (up to {{ HW_COUNT }} values)</label>
+    <table class="table table-bordered table-sm align-middle">
+      <thead>
+        <tr>
+          {% for i in range(1, HW_COUNT + 1) %}
+          <th class="text-center">{{ i }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for i in range(1, HW_COUNT + 1) %}
+          <td>
+            <input type="number" step="0.1"
+                   name="hw_{{ i }}"
+                   class="form-control form-control-sm"
+                   value="{{ student.get('hw_' ~ i, 0) or 0 }}">
+          </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Quiz scores -->
+  <div class="mb-3">
+    <label class="form-label">Quiz scores (up to {{ QUIZ_COUNT }} values)</label>
+    <table class="table table-bordered table-sm align-middle">
+      <thead>
+        <tr>
+          {% for i in range(1, QUIZ_COUNT + 1) %}
+          <th class="text-center">{{ i }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for i in range(1, QUIZ_COUNT + 1) %}
+          <td>
+            <input type="number" step="0.1"
+                   name="quiz_{{ i }}"
+                   class="form-control form-control-sm"
+                   value="{{ student.get('quiz_' ~ i, 0) or 0 }}">
+          </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-2">Save</button>
+  <a href="{{ url_for('admin_course', course_id=course_id) }}"
+     class="btn btn-secondary mt-2">Cancel</a>
+
+</form>
+
+{% endblock %}

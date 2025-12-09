@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% set max_total = course["max_total"] or 100 %}
+{% set max_mid   = course["max_mid"]   or 0 %}
+{% set max_final = course["max_final"] or 0 %}
+{% set max_p1    = course["max_p1"]    or 0 %}
+{% set max_p2    = course["max_p2"]    or 0 %}
+{% set max_hw    = course["max_hw"]    or 0 %}
+{% set max_quiz  = course["max_quiz"]  or 0 %}
+{% set max_lab   = course["max_lab"]   or 0 %}
+{% set max_class = course["max_class"] or 0 %}
+
+<h3>Student Score : {{ student["user_id"] }} {{ student["fullname"] }}</h3>
+<p>
+  Course: {{ course["course"] }} – {{ course["name"] }}
+</p>
+
+<hr>
+
+<p>
+  <strong>Total :</strong>
+  {{ "%.1f"|format(scores.total) }} / {{ "%.1f"|format(max_total) }}
+</p>
+
+<ul>
+  <li>
+    <strong>Mid-term exam:</strong>
+    {{ "%.1f"|format(scores.mid_term) }} / {{ "%.1f"|format(max_mid) }}
+  </li>
+  <li>
+    <strong>Final exam:</strong>
+    {{ "%.1f"|format(scores.final) }} / {{ "%.1f"|format(max_final) }}
+  </li>
+  <li>
+    <strong>Project 1:</strong>
+    {{ "%.1f"|format(scores.project1) }} / {{ "%.1f"|format(max_p1) }}
+  </li>
+  <li>
+    <strong>Project 2:</strong>
+    {{ "%.1f"|format(scores.project2) }} / {{ "%.1f"|format(max_p2) }}
+  </li>
+
+  <li class="mt-2">
+    <strong>Homework:</strong>
+    {{ "%.1f"|format(scores.homework_score) }} / {{ "%.1f"|format(max_hw) }}<br>
+    Total = {{ "%.1f"|format(scores.homework_sum) }} :
+    {% for i in range(1, HW_COUNT + 1) %}
+      {{ "%.1f"|format(student["hw_" ~ i] or 0) }}{% if not loop.last %}  {% endif %}
+    {% endfor %}
+  </li>
+
+  <li class="mt-2">
+    <strong>Quiz:</strong>
+    {{ "%.1f"|format(scores.quiz_score) }} / {{ "%.1f"|format(max_quiz) }}<br>
+    Total = {{ "%.1f"|format(scores.quiz_sum) }} :
+    {% for i in range(1, QUIZ_COUNT + 1) %}
+      {{ "%.1f"|format(student["quiz_" ~ i] or 0) }}{% if not loop.last %}  {% endif %}
+    {% endfor %}
+  </li>
+
+  <li class="mt-2">
+    <strong>Lab:</strong>
+    {{ "%.1f"|format(scores.lab_score) }} / {{ "%.1f"|format(max_lab) }}<br>
+    Total = {{ "%.1f"|format(scores.lab_sum) }} :
+    {% for i in range(1, LAB_COUNT + 1) %}
+      {{ "%.1f"|format(student["lab_" ~ i] or 0) }}{% if not loop.last %}  {% endif %}
+    {% endfor %}
+  </li>
+
+  <li class="mt-2">
+    <strong>Class attention:</strong>
+    {{ "%.1f"|format(scores.class_score) }} / {{ "%.1f"|format(max_class) }}<br>
+    Total = {{ "%.1f"|format(scores.class_sum) }} :
+    {% for i in range(1, CLASS_COUNT + 1) %}
+      {{ "%.1f"|format(student["class_" ~ i] or 0) }}{% if not loop.last %}  {% endif %}
+    {% endfor %}
+  </li>
+
+  <a href="{{ url_for('student_dashboard') }}"
+    class="btn btn-info btn-sm mb-3">
+    📊 My Score Graph
+  </a>
+
+</ul>
+
+{% endblock %}

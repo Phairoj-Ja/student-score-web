@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<h3>Edit Course – {{ course["course"] }}</h3>
+
+<form method="post">
+
+  <!-- Course ID (read-only) -->
+  <div class="mb-3">
+    <label class="form-label">Course ID</label>
+    <input type="text" class="form-control"
+           value="{{ course['course'] }}" readonly>
+    <div class="form-text">Course ID cannot be changed.</div>
+  </div>
+
+  <!-- Course name -->
+  <div class="mb-3">
+    <label class="form-label">Course Name</label>
+    <input type="text" name="name" class="form-control"
+           value="{{ course['name'] }}" required>
+  </div>
+
+  <!-- Status -->
+  <div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select">
+      <option value="active"
+              {% if course['status'] == 'active' %}selected{% endif %}>
+        active
+      </option>
+      <option value="suspend"
+              {% if course['status'] == 'suspend' %}selected{% endif %}>
+        suspend
+      </option>
+    </select>
+  </div>
+
+  <hr>
+
+  <!-- Max scores row 1 -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Total max</label>
+      <input type="number" step="0.1" name="max_total"
+             class="form-control"
+             value="{{ course.get('max_total', 0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Mid-term max</label>
+      <input type="number" step="0.1" name="max_mid"
+             class="form-control"
+             value="{{ course.get('max_mid', 0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Final max</label>
+      <input type="number" step="0.1" name="max_final"
+             class="form-control"
+             value="{{ course.get('max_final', 0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Project 1 max</label>
+      <input type="number" step="0.1" name="max_p1"
+             class="form-control"
+             value="{{ course.get('max_p1', 0) or 0 }}">
+    </div>
+  </div>
+
+  <!-- Max scores row 2 -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Project 2 max</label>
+      <input type="number" step="0.1" name="max_p2"
+             class="form-control"
+             value="{{ course.get('max_p2', 0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Class max</label>
+      <input type="number" step="0.1" name="max_class"
+             class="form-control"
+             value="{{ course.get('max_class', 0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Lab max</label>
+      <input type="number" step="0.1" name="max_lab"
+             class="form-control"
+             value="{{ course.get('max_lab', 0) or 0 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Homework max</label>
+      <input type="number" step="0.1" name="max_hw"
+             class="form-control"
+             value="{{ course.get('max_hw', 0) or 0 }}">
+    </div>
+  </div>
+
+  <!-- Max scores row 3 -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Quiz max</label>
+      <input type="number" step="0.1" name="max_quiz"
+             class="form-control"
+             value="{{ course.get('max_quiz', 0) or 0 }}">
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Factors -->
+  <h5>Default Factors</h5>
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Class factor</label>
+      <input type="number" step="0.1" name="class_factor"
+             class="form-control"
+             value="{{ course.get('class_factor', 1) or 1 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Lab factor</label>
+      <input type="number" step="0.1" name="lab_factor"
+             class="form-control"
+             value="{{ course.get('lab_factor', 1) or 1 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Homework factor</label>
+      <input type="number" step="0.1" name="hw_factor"
+             class="form-control"
+             value="{{ course.get('hw_factor', 1) or 1 }}">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Quiz factor</label>
+      <input type="number" step="0.1" name="quiz_factor"
+             class="form-control"
+             value="{{ course.get('quiz_factor', 1) or 1 }}">
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-2">Save</button>
+  <a href="{{ url_for('admin_course', course_id=course['course']) }}"
+     class="btn btn-secondary mt-2">Cancel</a>
+
+</form>
+
+{% endblock %}

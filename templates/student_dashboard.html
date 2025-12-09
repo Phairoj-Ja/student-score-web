@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href="{{ url_for('student_home') }}" class="btn btn-warning btn-sm mb-3">
+  ← Back
+</a>
+
+<h3>📊 Score Dashboard</h3>
+<h5>{{ student["user_id"] }} — {{ student["fullname"] }}</h5>
+
+<hr>
+
+<h5>Category Radar Chart</h5>
+<canvas id="radarChart"></canvas>
+
+<hr>
+
+<h5>Quiz Score Trend</h5>
+<canvas id="quizChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const sc = {{ scores|tojson }};
+const student = {{ student|tojson }};
+const quiz = [
+    student.quiz_1, student.quiz_2, student.quiz_3, student.quiz_4, student.quiz_5,
+    student.quiz_6, student.quiz_7, student.quiz_8, student.quiz_9, student.quiz_10
+];
+
+// Radar Chart
+new Chart(document.getElementById("radarChart"), {
+    type: "radar",
+    data: {
+        labels: ["Mid", "Final", "P1", "P2", "Class", "HW", "Quiz", "Lab"],
+        datasets: [{
+            label: "My Score",
+            data: [
+                sc.mid_term, sc.final, sc.project1, sc.project2,
+                sc.class_score, sc.homework_score, sc.quiz_score, sc.lab_score
+            ],
+            backgroundColor: "rgba(255, 159, 64, 0.3)",
+            borderColor: "orange"
+        }]
+    }
+});
+
+// Quiz Trend
+new Chart(document.getElementById("quizChart"), {
+    type: "line",
+    data: {
+        labels: quiz.map((_,i)=>"Q"+(i+1)),
+        datasets: [{
+            label: "Quiz Score",
+            data: quiz,
+            borderColor: "blue",
+            backgroundColor: "rgba(54,162,235,0.4)"
+        }]
+    }
+});
+</script>
+
+{% endblock %}

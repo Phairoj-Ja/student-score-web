@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href="{{ url_for('admin_home') }}" class="btn btn-warning btn-sm mb-3">
+  ← Back to Main
+</a>
+
+<h3>
+  Course: {{ course["course"] }} – {{ course["name"] }}
+</h3>
+<p>Status: {{ course["status"] }}</p>
+
+{# ---------- Max score + Factor box ---------- #}
+<div class="alert alert-secondary py-2">
+  <strong>Max Score:</strong><br>
+  Total ({{ course.get("max_total", 0) or 0 }}),
+  Mid-term ({{ course.get("max_mid", 0) or 0 }}),
+  Final ({{ course.get("max_final", 0) or 0 }}),
+  Project 1 ({{ course.get("max_p1", 0) or 0 }}),
+  Project 2 ({{ course.get("max_p2", 0) or 0 }}),
+  Class ({{ course.get("max_class", 0) or 0 }}),
+  Homework ({{ course.get("max_hw", 0) or 0 }}),
+  Quiz ({{ course.get("max_quiz", 0) or 0 }}),
+  Lab ({{ course.get("max_lab", 0) or 0 }})<br>
+  <strong>Factor:</strong>
+  Class = {{ course.get("class_factor", 1) or 1 }},
+  Lab = {{ course.get("lab_factor", 1) or 1 }},
+  HW = {{ course.get("hw_factor", 1) or 1 }},
+  Quiz = {{ course.get("quiz_factor", 1) or 1 }}
+</div>
+
+{# ---------- Buttons ---------- #}
+<div class="mb-3">
+  <a href="{{ url_for('admin_edit_course', course_id=course['course']) }}"
+     class="btn btn-outline-primary btn-sm">
+    Edit Course
+  </a>
+
+  <a href="#dashboard" class="btn btn-success btn-sm">
+    📊 Dashboard
+  </a>
+
+  <a href="{{ url_for('admin_add_student', course_id=course['course']) }}"
+     class="btn btn-primary btn-sm">
+    + Add Student
+  </a>
+</div>
+
+{# ---------- Student table ---------- #}
+<table class="table table-sm table-striped align-middle">
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>User ID</th>
+      <th>Full name</th>
+      <th>Status</th>
+      <th>Mid</th>
+      <th>Final</th>
+      <th>P1</th>
+      <th>P2</th>
+      <th>Class</th>
+      <th>Lab</th>
+      <th>HW</th>
+      <th>Quiz</th>
+      <th>Total</th>
+      <th>Actions</th>
+    </tr>
+    <tr class="small text-muted">
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>({{ course.get("max_mid", 0) or 0 }})</th>
+      <th>({{ course.get("max_final", 0) or 0 }})</th>
+      <th>({{ course.get("max_p1", 0) or 0 }})</th>
+      <th>({{ course.get("max_p2", 0) or 0 }})</th>
+      <th>({{ course.get("max_class", 0) or 0 }})</th>
+      <th>({{ course.get("max_lab", 0) or 0 }})</th>
+      <th>({{ course.get("max_hw", 0) or 0 }})</th>
+      <th>({{ course.get("max_quiz", 0) or 0 }})</th>
+      <th>({{ course.get("max_total", 0) or 0 }})</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in students %}
+      {% set r = s["row"] %}
+      {% set sc = s["scores"] %}
+      <tr{% if r["status"] == "suspend" %} class="table-danger"{% endif %}>
+        <td>{{ loop.index }}</td>
+        <td>{{ r["user_id"] }}</td>
+        <td>{{ r["fullname"] }}</td>
+        <td>{{ r["status"] }}</td>
+
+        <td>{{ "%.1f"|format(sc["mid_term"]) }}</td>
+        <td>{{ "%.1f"|format(sc["final"]) }}</td>
+        <td>{{ "%.1f"|format(sc["project1"]) }}</td>
+        <td>{{ "%.1f"|format(sc["project2"]) }}</td>
+
+        <td>{{ "%.1f"|format(sc["class_score"]) }}</td>
+        <td>{{ "%.1f"|format(sc["lab_score"]) }}</td>
+        <td>{{ "%.1f"|format(sc["homework_score"]) }}</td>
+        <td>{{ "%.1f"|format(sc["quiz_score"]) }}</td>
+
+        <td><strong>{{ "%.1f"|format(sc["total"]) }}</strong></td>
+
+        <td>
+          <a href="{{ url_for('admin_edit_student', student_id=r['id']) }}"
+             class="btn btn-sm btn-outline-primary">
+            Edit
+          </a>
+          <form method="post"
+                action="{{ url_for('admin_delete_student', student_id=r['id']) }}"
+                style="display:inline"
+                onsubmit="return confirm('Delete this student?');">
+            <button type="submit"
+                    class="btn btn-sm btn-outline-danger">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# ---------- Dashboard section ---------- #}
+<hr id="dashboard">
+
+<h4>Dashboard – Total Score Distribution</h4>
+<canvas id="totalChart" height="80"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function () {
+    const ctx = document.getElementById('totalChart');
+    if (!ctx) return;
+
+    const labels = [
+      {% for s in students %}
+        "{{ s['row']['user_id'] }}",
+      {% endfor %}
+    ];
+
+    const totals = [
+      {% for s in students %}
+        {{ "%.1f"|format(s['scores']['total']) }},
+      {% endfor %}
+    ];
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Total score',
+          data: totals
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: {{ course.get("max_total", 100) or 100 }}
+          }
+        }
+      }
+    });
+  })();
+</script>
+
+{% endblock %}

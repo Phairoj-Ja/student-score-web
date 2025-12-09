@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header bg-orange text-white">
+        <strong><h3>Course Login</h3></strong>
+      </div>
+
+      <div class="card-body">
+
+        <form method="post">
+          <!-- Course -->
+          <div class="mb-3">
+            <label class="form-label">Course</label>
+            <select name="course" class="form-select" required>
+              {% for c in courses %}
+              <option value="{{ c.course }}">{{ c.course }} – {{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- User ID -->
+          <div class="mb-3">
+            <label class="form-label">User ID</label>
+            <input type="text"
+                   name="user_id"
+                   class="form-control"
+                   required>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password"
+                   name="password"
+                   class="form-control">
+          </div>
+
+          <!-- Confirm password (ใช้เฉพาะตอนตั้งรหัสใหม่ครั้งแรก หรือหลัง reset) -->
+          <div class="mb-3">
+            <label class="form-label">Confirm password</label>
+            <input type="password"
+                   name="password_confirm"
+                   class="form-control">
+            <div class="form-text">
+              Use this field only when you are setting a new password
+              (first login or after password reset).
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Login
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

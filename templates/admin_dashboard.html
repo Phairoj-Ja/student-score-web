@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href="{{ url_for('admin_course', course_id=course['course']) }}"
+   class="btn btn-warning btn-sm mb-3">← Back</a>
+
+<h3>📊 Dashboard — {{ course["course"] }} ({{ course["name"] }})</h3>
+
+<hr>
+
+<!-- TOTAL SCORE DISTRIBUTION -->
+<h5>Total Score Distribution</h5>
+<canvas id="totalChart"></canvas>
+
+<hr>
+
+<h5>Average Category Scores</h5>
+<canvas id="avgChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const totals = {{ totals | tojson }};
+const mids = {{ mids | tojson }};
+const finals = {{ finals | tojson }};
+const p1s = {{ p1s | tojson }};
+const p2s = {{ p2s | tojson }};
+const cls = {{ class_scores | tojson }};
+const hws = {{ hw_scores | tojson }};
+const quizzes = {{ quiz_scores | tojson }};
+const labs = {{ lab_scores | tojson }};
+
+// Total Score Chart
+new Chart(document.getElementById("totalChart"), {
+    type: "bar",
+    data: {
+        labels: totals.map((_, i) => "S" + (i+1)),
+        datasets: [{
+            label: "Total Score",
+            data: totals,
+            backgroundColor: "rgba(255, 159, 64, 0.6)"
+        }]
+    }
+});
+
+// Average Category Chart
+new Chart(document.getElementById("avgChart"), {
+    type: "radar",
+    data: {
+        labels: ["Mid", "Final", "P1", "P2", "Class", "HW", "Quiz", "Lab"],
+        datasets: [{
+            label: "Average Score",
+            data: [
+                avg(mids), avg(finals), avg(p1s), avg(p2s),
+                avg(cls), avg(hws), avg(quizzes), avg(labs)
+            ],
+            backgroundColor: "rgba(54, 162, 235, 0.3)",
+            borderColor: "blue"
+        }]
+    }
+});
+
+// Helper Function
+function avg(arr) {
+    return arr.length ? arr.reduce((a,b)=>a+b,0) / arr.length : 0;
+}
+</script>
+
+{% endblock %}
